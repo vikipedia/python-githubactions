@@ -30,21 +30,15 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
           python -m build
-          
-      - name: Extract tag name
+
+      - name: Extract Path
         id: asset_path
-        uses: actions/github-script@0.2.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            return context.payload.ref.replace('/\/refs\/tags\/v\(.*\)/', './dist/python_pkg-\1.tar.gz');
-      - name: Extract zip name
+        run: echo ::set-output name=PATH::$(echo $GITHUB_REF | cut -d / -f 3|sed -e 's/v\(.*\)/.\/dist\/python_pkg-\1.tar.gz/')
+
+      - name: Extract Path
         id: asset_name
-        uses: actions/github-script@0.2.0
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            return context.payload.ref.replace('/\/refs\/tags\/v\(.*\)/', 'python_pkg-\1.tar.gz');
+        run: echo ::set-output name=NAME::$(echo $GITHUB_REF | cut -d / -f 3|sed -e 's/v\(.*\)/python_pkg-\1.tar.gz/')
+
 
       - name: Upload Package Asset
         id: upload-package-asset 
@@ -53,6 +47,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ${{ steps.asset_path.outputs.result }}
-          asset_name: ${{ steps.asset_name.outputs.result }}
+          asset_path: ${{ steps.asset_path.outputs.PATH }}
+          asset_name: ${{ steps.asset_name.outputs.NAME }}
           asset_content_type: application/gzip
