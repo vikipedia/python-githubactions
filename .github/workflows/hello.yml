@@ -9,7 +9,7 @@
 name: hello
 on: [push]
 jobs:
-  deploy:
+  hello:
 
     runs-on: ubuntu-latest
 
