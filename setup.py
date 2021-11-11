@@ -8,7 +8,7 @@ def requirements():
 
 setup(
     name="python_pkg",
-    version="1.0.0",
+    version="1.0.1",
     description="test for github actions",
     long_description="README.md",
     long_description_content_type="text/markdown",

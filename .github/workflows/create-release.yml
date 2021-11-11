@@ -33,13 +33,21 @@ jobs:
           python -m pip install --upgrade pip
           pip install build
           python -m build
-      - name: Upload Release Asset
-        id: upload-release-asset 
+          
+      - name: Extract tag name
+        id: tag
+        uses: actions/github-script@0.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            return context.payload.ref.replace(/\/refs\/tags\/v/, '');
+      - name: Upload Package Asset
+        id: upload-package-asset 
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./dist/python_pkg-1.0.0.tar.gz
-          asset_name: python_pkg-1.0.0.tar.gz
+          asset_path: ./dist/python_pkg-${{ steps.tag.outputs.result }}.tar.gz
+          asset_name: python_pkg-${{ steps.tag.outputs.result }}.tar.gz
           asset_content_type: application/gzip
