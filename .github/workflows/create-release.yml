@@ -25,7 +25,7 @@ jobs:
           draft: false
           prerelease: false
       - name: Create package
-        id: create_package
+        id: create_build
         run: |
           python -m pip install --upgrade pip
           pip install build
