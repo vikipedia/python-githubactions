@@ -12,7 +12,7 @@ setup(
     description="test for github actions",
     long_description="README.md",
     long_description_content_type="text/markdown",
-    url="https://test.site.in"
+    url="https://test.site.in",
     maintainer="Vikrant Patil",
     maintainer_email="vikrant.patil@gmail.com",
     license="MIT LICENSE",

@@ -1,2 +1,2 @@
-include requirements.txt LICENCE README.md
-recursive-include python_pkg
+include requirements.txt LICENSE README.md
+recursive-include python_pkg 
