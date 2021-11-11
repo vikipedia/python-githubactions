@@ -14,11 +14,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Build project # This would actually build your project, using zip for an example artifact
-        run: |
-          zip --junk-paths my-artifact README.md
-      - name: Create Release
-        id: create_release
+      - name: Create Package
+        id: create_package
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,12 +32,20 @@ jobs:
           python -m build
           
       - name: Extract tag name
-        id: tag
+        id: asset_path
         uses: actions/github-script@0.2.0
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            return context.payload.ref.replace(/\/refs\/tags\/v/, '');
+            return context.payload.ref.replace('/\/refs\/tags\/v\(.*\)/', './dist/python_pkg-\1.tar.gz');
+      - name: Extract zip name
+        id: asset_name
+        uses: actions/github-script@0.2.0
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            return context.payload.ref.replace('/\/refs\/tags\/v\(.*\)/', 'python_pkg-\1.tar.gz');
+
       - name: Upload Package Asset
         id: upload-package-asset 
         uses: actions/upload-release-asset@v1
@@ -48,6 +53,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
-          asset_path: ./dist/python_pkg-${{ steps.tag.outputs.result }}.tar.gz
-          asset_name: python_pkg-${{ steps.tag.outputs.result }}.tar.gz
+          asset_path: ${{ steps.asset_path.outputs.result }}
+          asset_name: ${{ steps.asset_name.outputs.result }}
           asset_content_type: application/gzip
